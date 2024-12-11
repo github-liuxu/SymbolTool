@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -11,7 +11,11 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		58F24F1A2D09794A007914AD /* SymbolTool */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = SymbolTool; sourceTree = "<group>"; };
+		58F24F1A2D09794A007914AD /* SymbolTool */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SymbolTool;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,7 +86,6 @@
 				};
 			};
 			buildConfigurationList = 58F24F132D09794A007914AD /* Build configuration list for PBXProject "SymbolTool" */;
-			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -91,6 +94,7 @@
 			);
 			mainGroup = 58F24F0F2D09794A007914AD;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
 			productRefGroup = 58F24F192D09794A007914AD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
