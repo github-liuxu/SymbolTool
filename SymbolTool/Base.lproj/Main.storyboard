@@ -743,7 +743,7 @@
                                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <size key="minSize" width="908" height="573"/>
-                                            <size key="maxSize" width="908" height="10000000"/>
+                                            <size key="maxSize" width="923" height="10000000"/>
                                         </textView>
                                     </subviews>
                                 </clipView>
@@ -757,8 +757,8 @@
                                 </scroller>
                             </scrollView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="EWM-4f-h82">
-                                <rect key="frame" x="444" y="1" width="75" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WvJ-H0-p59">
+                                <rect key="frame" x="448" y="1" width="68" height="32"/>
+                                <buttonCell key="cell" type="push" title="Parse" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="WvJ-H0-p59">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
