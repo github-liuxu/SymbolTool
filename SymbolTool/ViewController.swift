@@ -41,8 +41,11 @@ class ViewController: NSViewController {
     @IBOutlet weak var progressBar: NSProgressIndicator!
     @Atomic var originText = ""
     @Atomic var parseText = ""
-    var keyWorld = "NvStreamingSdkCore"
+    var keyWorld = ""
     var atosPath = "/usr/bin/atos"
+    @IBOutlet weak var uuid: NSTextField!
+    var arch = "arm64"
+    var dsymBinaryPath = ""
     var parsequeue = DispatchQueue.global()
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -69,6 +72,13 @@ class ViewController: NSViewController {
         self.originText = textView.string
     }
 
+    @IBAction func didSelectedArch(_ sender: NSComboBox) {
+        arch = sender.objectValueOfSelectedItem as! String
+        if keyWorld.count > 0 && dsymBinaryPath.count > 0 {
+            uuid.stringValue = "UUID: " + getUUID(arch: arch, path: dsymBinaryPath)
+        }
+    }
+    
     @IBAction func openDSYMFile(_ sender: NSButton) {
         let openPanel = NSOpenPanel()
         openPanel.title = "Select file"
@@ -83,12 +93,28 @@ class ViewController: NSViewController {
                 let fm = FileManager.default
                 let content = try? fm.contentsOfDirectory(atPath: selectedFile.path + "/Contents/Resources/DWARF")
                 if let name = content?.first {
+                    dsymBinaryPath = selectedFile.path + "/Contents/Resources/DWARF/" + name
+                    uuid.stringValue = "UUID: " + getUUID(arch: arch, path: dsymBinaryPath)
                     keyWorld = name
                 }
             }
         } else {
             print("用户取消选择")
         }
+    }
+    
+    func getUUID(arch: String, path: String) -> String {
+        let uuids = executeCommand("/usr/bin/dwarfdump", arguments: ["--uuid", path]).split(separator: "\n")
+        var uuid = ""
+        uuids.forEach { uuidInfo in
+            let info = uuidInfo.split(separator: " ")
+            if info.count > 2 {
+                if String(info[2]).contains(arch) {
+                    uuid = String(info[1])
+                }
+            }
+        }
+        return uuid
     }
     
     @IBAction func parse(_ sender: NSButton) {
@@ -136,7 +162,7 @@ class ViewController: NSViewController {
                 }
             }
         }
-        let args = ["-arch","arm64","-o",dsymPath + "/Contents/Resources/DWARF/" + keyWorld, "-l",addr1, addr0]
+        let args = ["-arch",arch,"-o",dsymPath + "/Contents/Resources/DWARF/" + keyWorld, "-l",addr1, addr0]
         return executeCommand(atosPath, arguments: args)
     }
     
