@@ -72,7 +72,6 @@ class ViewController: NSViewController {
     
     @objc func textDidChange(_ notification: Notification) {
         self.originText = textView.string
-        logText += self.originText + "\n"
     }
 
     @IBAction func didSelectedArch(_ sender: NSComboBox) {
