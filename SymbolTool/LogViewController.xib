@@ -1,19 +1,56 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11134" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="23727" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11134"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="23727"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <customObject id="-2" userLabel="File's Owner" customClass="LogViewController" customModuleProvider="target">
+        <customObject id="-2" userLabel="File's Owner" customClass="LogViewController" customModule="SymbolTool" customModuleProvider="target">
             <connections>
+                <outlet property="textView" destination="pQ0-b0-H05" id="dLC-1L-7zI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="272"/>
+            <rect key="frame" x="0.0" y="0.0" width="795" height="520"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <scrollView borderType="none" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cZ2-gt-SPA">
+                    <rect key="frame" x="0.0" y="0.0" width="795" height="520"/>
+                    <clipView key="contentView" drawsBackground="NO" id="5YT-Jn-Vx0">
+                        <rect key="frame" x="0.0" y="0.0" width="795" height="520"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView wantsLayer="YES" importsGraphics="NO" richText="NO" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="pQ0-b0-H05">
+                                <rect key="frame" x="0.0" y="0.0" width="795" height="520"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                <size key="minSize" width="795" height="520"/>
+                                <size key="maxSize" width="795" height="10000000"/>
+                            </textView>
+                        </subviews>
+                    </clipView>
+                    <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Asb-LH-S0w">
+                        <rect key="frame" x="-100" y="-100" width="240" height="16"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                    <scroller key="verticalScroller" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="8xm-ra-H9p">
+                        <rect key="frame" x="779" y="0.0" width="16" height="520"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </scroller>
+                </scrollView>
+            </subviews>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="cZ2-gt-SPA" secondAttribute="trailing" id="4B9-RF-7bR"/>
+                <constraint firstItem="cZ2-gt-SPA" firstAttribute="top" secondItem="Hz6-mo-xeY" secondAttribute="top" id="QxY-vF-uOl"/>
+                <constraint firstAttribute="bottom" secondItem="cZ2-gt-SPA" secondAttribute="bottom" id="TJX-LX-pme"/>
+                <constraint firstItem="cZ2-gt-SPA" firstAttribute="leading" secondItem="Hz6-mo-xeY" secondAttribute="leading" id="czP-Pa-Yc5"/>
+            </constraints>
+            <point key="canvasLocation" x="17.5" y="138"/>
         </customView>
     </objects>
 </document>

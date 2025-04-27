@@ -47,6 +47,7 @@ class ViewController: NSViewController {
     var arch = "arm64"
     var dsymBinaryPath = ""
     var parsequeue = DispatchQueue.global()
+    var logText = ""
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -59,6 +60,7 @@ class ViewController: NSViewController {
                                                        name: NSText.didChangeNotification,
                                                        object: textView)
         atosPath = executeCommand("/usr/bin/which", arguments: ["atos"]).replacingOccurrences(of: "\n", with: "")
+        logText += atosPath + "\n"
         // Do any additional setup after loading the view.
     }
 
@@ -70,6 +72,7 @@ class ViewController: NSViewController {
     
     @objc func textDidChange(_ notification: Notification) {
         self.originText = textView.string
+        logText += self.originText + "\n"
     }
 
     @IBAction func didSelectedArch(_ sender: NSComboBox) {
@@ -77,6 +80,8 @@ class ViewController: NSViewController {
         if keyWorld.count > 0 && dsymBinaryPath.count > 0 {
             uuid.stringValue = "UUID: " + getUUID(arch: arch, path: dsymBinaryPath)
         }
+        logText += arch + "\n"
+        logText += uuid.stringValue + "\n"
     }
     
     @IBAction func openDSYMFile(_ sender: NSButton) {
@@ -98,12 +103,16 @@ class ViewController: NSViewController {
                     keyWorld = name
                 }
             }
+            logText += dsymBinaryPath + "\n"
+            logText += uuid.stringValue + "\n"
+            logText += keyWorld + "\n"
         } else {
             print("用户取消选择")
         }
     }
     
     func getUUID(arch: String, path: String) -> String {
+        logText += "/usr/bin/dwarfdump" + " --uuid " + path + "\n"
         let uuids = executeCommand("/usr/bin/dwarfdump", arguments: ["--uuid", path]).split(separator: "\n")
         var uuid = ""
         uuids.forEach { uuidInfo in
@@ -168,6 +177,7 @@ class ViewController: NSViewController {
     }
     
     func executeCommand(_ command: String, arguments: [String] = []) -> String {
+        logText += command + arguments.joined(separator: " ") + "\n"
         let process = Process()
         process.executableURL = URL(fileURLWithPath: command)
         process.arguments = arguments
@@ -186,5 +196,23 @@ class ViewController: NSViewController {
         }
         return ""
     }
+    
+    @IBAction func manualClick(_ sender: NSButton) {
+        let manualVC = ManualViewController(nibName: "ManualViewController", bundle: Bundle.main)
+        manualVC.arch = arch
+        manualVC.dsymPath = dsymPath.stringValue + "/Contents/Resources/DWARF/" + keyWorld
+        manualVC.atosPath = atosPath
+        manualVC.logBlock = { [weak self] log in
+            self?.logText += log + "\n"
+        }
+        presentAsModalWindow(manualVC)
+    }
+    
+    @IBAction func logClick(_ sender: NSButton) {
+        let logVC = LogViewController(nibName: "LogViewController", bundle: Bundle.main)
+        presentAsModalWindow(logVC)
+        logVC.textView.string = logText
+    }
+    
 }
 

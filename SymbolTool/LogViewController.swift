@@ -9,6 +9,7 @@ import Cocoa
 
 class LogViewController: NSViewController {
 
+    @IBOutlet var textView: NSTextView!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do view setup here.
