@@ -148,7 +148,8 @@ class ViewController: NSViewController {
     }
     
     func atosSymbol(dsymPath: String, text: String)-> String {
-        let items = text.split(separator: " ")
+        let tempTxt = text.replacingOccurrences(of: "\t", with: "")
+        let items = tempTxt.split(separator: " ")
         let index = items.firstIndex { item in
             item.hasPrefix("0x")
         }
