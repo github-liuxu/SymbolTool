@@ -41,13 +41,11 @@ class ViewController: NSViewController {
     @IBOutlet weak var progressBar: NSProgressIndicator!
     @Atomic var originText = ""
     @Atomic var parseText = ""
-    var keyWorld = ""
-    var atosPath = "/usr/bin/atos"
     @IBOutlet weak var uuid: NSTextField!
     var arch = "arm64"
-    var dsymBinaryPath = ""
     var parsequeue = DispatchQueue.global()
     var logText = ""
+    var parser: ParserProtocol?
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -59,8 +57,6 @@ class ViewController: NSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChange(_:)),
                                                        name: NSText.didChangeNotification,
                                                        object: textView)
-        atosPath = executeCommand("/usr/bin/which", arguments: ["atos"]).replacingOccurrences(of: "\n", with: "")
-        logText += atosPath + "\n"
         // Do any additional setup after loading the view.
     }
 
@@ -76,11 +72,25 @@ class ViewController: NSViewController {
 
     @IBAction func didSelectedArch(_ sender: NSComboBox) {
         arch = sender.objectValueOfSelectedItem as! String
-        if keyWorld.count > 0 && dsymBinaryPath.count > 0 {
-            uuid.stringValue = "UUID: " + getUUID(arch: arch, path: dsymBinaryPath)
+        if dsymPath.stringValue.count > 0 {
+            uuid.stringValue = "UUID: " + (parser?.getUUID(arch: arch) ?? "")
         }
         logText += arch + "\n"
         logText += uuid.stringValue + "\n"
+    }
+    
+    @IBAction func didSelectedPlatform(_ sender: NSComboBox) {
+        if sender.stringValue == "iOS" {
+            parser = Parser()
+        } else if sender.stringValue == "Android" {
+            parser = AndroidParser()
+        } else if sender.stringValue == "Harmony" {
+            parser = HarmonyParser()
+        }
+        logText += sender.stringValue + "\n"
+        parser?.setArch(arch: arch)
+        parser?.setDsymPath(path: dsymPath.stringValue)
+        uuid.stringValue = "UUID: " + (parser?.getUUID(arch: arch) ?? "")
     }
     
     @IBAction func openDSYMFile(_ sender: NSButton) {
@@ -90,54 +100,28 @@ class ViewController: NSViewController {
         openPanel.allowsMultipleSelection = false
         openPanel.canChooseDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.allowedFileTypes = ["dSYM"]
+        openPanel.allowedFileTypes = ["dSYM", "so"]
         if openPanel.runModal() == .OK {
             if let selectedFile = openPanel.url {
                 dsymPath.stringValue = selectedFile.path
-                let fm = FileManager.default
-                let content = try? fm.contentsOfDirectory(atPath: selectedFile.path + "/Contents/Resources/DWARF")
-                if let name = content?.first {
-                    dsymBinaryPath = selectedFile.path + "/Contents/Resources/DWARF/" + name
-                    uuid.stringValue = "UUID: " + getUUID(arch: arch, path: dsymBinaryPath)
-                    keyWorld = name
-                }
+                parser?.setDsymPath(path: selectedFile.path)
+                parser?.setArch(arch: arch)
+                uuid.stringValue = "UUID: " + (parser?.getUUID(arch: arch) ?? "")
+                logText += selectedFile.path + " " + arch  + " uuid " + uuid.stringValue + "\n"
             }
-            logText += dsymBinaryPath + "\n"
-            logText += uuid.stringValue + "\n"
-            logText += keyWorld + "\n"
         } else {
             print("用户取消选择")
         }
     }
     
-    func getUUID(arch: String, path: String) -> String {
-        logText += "/usr/bin/dwarfdump" + " --uuid " + path + "\n"
-        let uuids = executeCommand("/usr/bin/dwarfdump", arguments: ["--uuid", path]).split(separator: "\n")
-        var uuid = ""
-        uuids.forEach { uuidInfo in
-            let info = uuidInfo.split(separator: " ")
-            if info.count > 2 {
-                if String(info[2]).contains(arch) {
-                    uuid = String(info[1])
-                }
-            }
-        }
-        return uuid
-    }
-    
     @IBAction func parse(_ sender: NSButton) {
         self.parseText = ""
-        let dsymPathValue = dsymPath.stringValue
         parsequeue.async {
             let count = self.originText.split(separator: "\n").count
             var currentLine = 0
             self.originText.enumerateLines { line, _ in
                 currentLine += 1
-                if line.contains(self.keyWorld) {
-                    self.parseText = self.parseText + self.atosSymbol(dsymPath: dsymPathValue ,text: line)
-                } else {
-                    self.parseText = self.parseText + line + "\n"
-                }
+                self.parseText = self.parseText + (self.parser?.parser(text: line) ?? "")
                 DispatchQueue.main.async {
                     self.progressBar.isHidden = false
                     self.progressBar.maxValue = Double(count)
@@ -155,52 +139,11 @@ class ViewController: NSViewController {
         
     }
     
-    func atosSymbol(dsymPath: String, text: String)-> String {
-        let tempTxt = text.replacingOccurrences(of: "\t", with: "")
-        let items = tempTxt.split(separator: " ")
-        let index = items.firstIndex { item in
-            item.hasPrefix("0x")
-        }
-        var addr0 = ""
-        var addr1 = ""
-        if let index = index {
-            if items.count > index {
-                addr0 = String(items[index])
-                if items.count > index + 1 {
-                    addr1 = String(items[index + 1])
-                }
-            }
-        }
-        let args = ["-arch",arch,"-o",dsymPath + "/Contents/Resources/DWARF/" + keyWorld, "-l",addr1, addr0]
-        return executeCommand(atosPath, arguments: args)
-    }
-    
-    func executeCommand(_ command: String, arguments: [String] = []) -> String {
-        logText += command + arguments.joined(separator: " ") + "\n"
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: command)
-        process.arguments = arguments
-        let pipe = Pipe()
-        process.standardOutput = pipe
-        process.standardError = pipe
-        do {
-            try process.run()
-            process.waitUntilExit()
-            let data = pipe.fileHandleForReading.readDataToEndOfFile()
-            if let output = String(data: data, encoding: .utf8) {
-                return output
-            }
-        } catch {
-            return "无法执行命令: \(error)"
-        }
-        return ""
-    }
-    
     @IBAction func manualClick(_ sender: NSButton) {
         let manualVC = ManualViewController(nibName: "ManualViewController", bundle: Bundle.main)
-        manualVC.arch = arch
-        manualVC.dsymPath = dsymPath.stringValue + "/Contents/Resources/DWARF/" + keyWorld
-        manualVC.atosPath = atosPath
+        parser?.setArch(arch: arch)
+        parser?.setDsymPath(path: dsymPath.stringValue)
+        manualVC.parser = parser
         manualVC.logBlock = { [weak self] log in
             self?.logText += log + "\n"
         }

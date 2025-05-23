@@ -9,9 +9,7 @@ import Cocoa
 
 class ManualViewController: NSViewController {
 
-    var arch = "arm64"
-    var dsymPath = ""
-    var atosPath = ""
+    var parser: ParserProtocol?
     @IBOutlet var textView: NSTextView!
     @IBOutlet weak var offset: NSTextField!
     @IBOutlet weak var symbleAddr: NSTextField!
@@ -35,9 +33,7 @@ class ManualViewController: NSViewController {
             }
         }
         
-        let args: [String] = ["-arch",arch,"-o",dsymPath, "-l",loadAddr.stringValue, symbleText]
-        logBlock?("atos args: \(args)")
-        let txt = CmdUtil.executeCommand(atosPath, arguments: args)
+        let txt = parser?.parser(params: [loadAddr.stringValue, symbleText]) ?? ""
         self.textView.string = txt
         logBlock?(txt)
     }
