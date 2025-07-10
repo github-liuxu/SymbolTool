@@ -104,6 +104,11 @@ class AndroidParser: ParserProtocol {
     init() {
         let home = "/Users/" + CmdUtil.executeCommand("/usr/bin/whoami").replacingOccurrences(of: "\n", with: "")
         addr2line = home + "/android-ndk-r27/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line"
+        if let path =  UserDefaults().object(forKey: "AndroidAddr") as? String {
+            if path.count > 0 {
+                self.addr2line = path
+            }
+        }
     }
     
     func flushParseExe() {
@@ -145,7 +150,7 @@ class AndroidParser: ParserProtocol {
         let array = text.split(separator: " ")
         if array.count >= 3 {
             let addr = String(array[2])
-            let result = CmdUtil.executeCommand(addr2line, arguments: ["-C -f -e", self.dsymPath, addr])
+            let result = CmdUtil.executeCommand(addr2line, arguments: ["-C", "-f", "-e", self.dsymPath, addr])
             return result
         }
         return text
@@ -155,7 +160,7 @@ class AndroidParser: ParserProtocol {
         if params.count == 0 {
             return ""
         }
-        let result = CmdUtil.executeCommand(addr2line, arguments: ["-C -f -e", self.dsymPath, params.first ?? ""])
+        let result = CmdUtil.executeCommand(addr2line, arguments: ["-C", "-f", "-e", self.dsymPath, params.first ?? ""])
         return result
     }
 }
@@ -170,6 +175,11 @@ class HarmonyParser: ParserProtocol {
     init() {
         let home = "/Users/" + CmdUtil.executeCommand("/usr/bin/whoami").replacingOccurrences(of: "\n", with: "")
         addr2line = home + "/command-line-tools/sdk/default/openharmony/native/llvm/bin/llvm-addr2line"
+        if let path =  UserDefaults().object(forKey: "HarmonyAddr") as? String {
+            if path.count > 0 {
+                self.addr2line = path
+            }
+        }
     }
     
     func flushParseExe() {

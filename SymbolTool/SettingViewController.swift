@@ -34,7 +34,7 @@ class SettingViewController: NSViewController {
         openPanel.allowsMultipleSelection = false
         openPanel.canChooseDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.allowedFileTypes = [""]
+        openPanel.allowedFileTypes = ["public.unix-executable","public.executable"]
         if openPanel.runModal() == .OK {
             if let selectedFile = openPanel.url {
                 atosTextField.stringValue = selectedFile.path
@@ -51,7 +51,7 @@ class SettingViewController: NSViewController {
         openPanel.allowsMultipleSelection = false
         openPanel.canChooseDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.allowedFileTypes = [""]
+        openPanel.allowedFileTypes = ["public.unix-executable","public.executable"]
         if openPanel.runModal() == .OK {
             if let selectedFile = openPanel.url {
                 androidAddrField.stringValue = selectedFile.path
@@ -68,7 +68,7 @@ class SettingViewController: NSViewController {
         openPanel.allowsMultipleSelection = false
         openPanel.canChooseDirectories = false
         openPanel.canChooseFiles = true
-        openPanel.allowedFileTypes = [""]
+        openPanel.allowedFileTypes = ["public.unix-executable","public.executable"]
         if openPanel.runModal() == .OK {
             if let selectedFile = openPanel.url {
                 harmonyAddrField.stringValue = selectedFile.path

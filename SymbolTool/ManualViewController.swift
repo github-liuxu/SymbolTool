@@ -41,9 +41,9 @@ class ManualViewController: NSViewController {
             var symbleText = symbleAddr.stringValue
             if symbleAddr.stringValue.count == 0 {
                 var hexStr = loadAddr.stringValue
-                if hexStr.hasPrefix("0x") {
-                    hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
-                }
+//                if hexStr.hasPrefix("0x") {
+//                    hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
+//                }
                 let txt = parser?.parser(params: [hexStr]) ?? ""
                 self.textView.string = txt
                 logBlock?(txt)
