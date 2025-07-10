@@ -13,6 +13,8 @@ protocol ParserProtocol {
     func getUUID(arch: String) -> String
     func parser(text: String) -> String
     func parser(params: [String]) -> String
+    func flushParseExe()
+    func type() -> String
 }
 
 class Parser: ParserProtocol {
@@ -23,6 +25,18 @@ class Parser: ParserProtocol {
     var arch: String = "arm64"
     init() {
         atosPath = CmdUtil.executeCommand("/usr/bin/which", arguments: ["atos"]).replacingOccurrences(of: "\n", with: "")
+    }
+    
+    func flushParseExe() {
+        if let path =  UserDefaults().object(forKey: "AtosPath") as? String {
+            if path.count > 0 {
+                self.atosPath = path
+            }
+        }
+    }
+    
+    func type() -> String {
+        return "iOS"
     }
     
     func setDsymPath(path: String) {
@@ -89,8 +103,21 @@ class AndroidParser: ParserProtocol {
     var arch: String = "arm64"
     init() {
         let home = "/Users/" + CmdUtil.executeCommand("/usr/bin/whoami").replacingOccurrences(of: "\n", with: "")
-        addr2line = home + "/android-ndk-r21/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line"
+        addr2line = home + "/android-ndk-r27/toolchains/aarch64-linux-android-4.9/prebuilt/darwin-x86_64/bin/aarch64-linux-android-addr2line"
     }
+    
+    func flushParseExe() {
+        if let path =  UserDefaults().object(forKey: "AndroidAddr") as? String {
+            if path.count > 0 {
+                self.addr2line = path
+            }
+        }
+    }
+    
+    func type() -> String {
+        return "Android"
+    }
+    
     func setDsymPath(path: String) {
         self.dsymPath = path
         let fileInfo = CmdUtil.executeCommand("/usr/bin/file", arguments: [path])
@@ -139,10 +166,24 @@ class HarmonyParser: ParserProtocol {
     var addr2line: String = ""
     var keyWorld: String = ""
     var arch: String = "arm64"
+    
     init() {
         let home = "/Users/" + CmdUtil.executeCommand("/usr/bin/whoami").replacingOccurrences(of: "\n", with: "")
         addr2line = home + "/command-line-tools/sdk/default/openharmony/native/llvm/bin/llvm-addr2line"
     }
+    
+    func flushParseExe() {
+        if let path =  UserDefaults().object(forKey: "HarmonyAddr") as? String {
+            if path.count > 0 {
+                self.addr2line = path
+            }
+        }
+    }
+    
+    func type() -> String {
+        return "Harmony"
+    }
+    
     func setDsymPath(path: String) {
         self.dsymPath = path
         let fileInfo = CmdUtil.executeCommand("/usr/bin/file", arguments: [path])

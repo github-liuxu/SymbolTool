@@ -21,21 +21,46 @@ class ManualViewController: NSViewController {
     }
     
     @IBAction func parseClick(_ sender: NSButton) {
-        var symbleText = symbleAddr.stringValue
-        if symbleAddr.stringValue.count == 0 {
-            var hexStr = loadAddr.stringValue
-            if hexStr.hasPrefix("0x") {
-                hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
+        if parser?.type() == "iOS" {
+            var symbleText = symbleAddr.stringValue
+            if symbleAddr.stringValue.count == 0 {
+                var hexStr = loadAddr.stringValue
+                if hexStr.hasPrefix("0x") {
+                    hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
+                }
+                if let decimalValue = Int64(hexStr, radix: 16) {
+                    let addr = decimalValue + (Int64(offset.stringValue) ?? 0)
+                    symbleText = "0x" + String(addr, radix: 16)
+                }
             }
-            if let decimalValue = Int64(hexStr, radix: 16) {
-                let addr = decimalValue + (Int64(offset.stringValue) ?? 0)
-                symbleText = "0x" + String(addr, radix: 16)
+            
+            let txt = parser?.parser(params: [loadAddr.stringValue, symbleText]) ?? ""
+            self.textView.string = txt
+            logBlock?(txt)
+        } else if parser?.type() == "Android" {
+            var symbleText = symbleAddr.stringValue
+            if symbleAddr.stringValue.count == 0 {
+                var hexStr = loadAddr.stringValue
+                if hexStr.hasPrefix("0x") {
+                    hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
+                }
+                let txt = parser?.parser(params: [hexStr]) ?? ""
+                self.textView.string = txt
+                logBlock?(txt)
+            }
+        } else if parser?.type() == "Harmony" {
+            var symbleText = symbleAddr.stringValue
+            if symbleAddr.stringValue.count == 0 {
+                var hexStr = loadAddr.stringValue
+                if hexStr.hasPrefix("0x") {
+                    hexStr = hexStr.replacingOccurrences(of: "0x", with: "")
+                }
+                let txt = parser?.parser(params: [hexStr]) ?? ""
+                self.textView.string = txt
+                logBlock?(txt)
             }
         }
         
-        let txt = parser?.parser(params: [loadAddr.stringValue, symbleText]) ?? ""
-        self.textView.string = txt
-        logBlock?(txt)
     }
     
 }

@@ -69,7 +69,7 @@ class ViewController: NSViewController {
     @objc func textDidChange(_ notification: Notification) {
         self.originText = textView.string
     }
-
+    
     @IBAction func didSelectedArch(_ sender: NSComboBox) {
         arch = sender.objectValueOfSelectedItem as! String
         if dsymPath.stringValue.count > 0 {
@@ -154,6 +154,14 @@ class ViewController: NSViewController {
         let logVC = LogViewController(nibName: "LogViewController", bundle: Bundle.main)
         presentAsModalWindow(logVC)
         logVC.textView.string = logText
+    }
+    
+    @IBAction func settingClick(_ sender: NSButton) {
+        let setVC = SettingViewController(nibName: "SettingViewController", bundle: Bundle.main)
+        presentAsModalWindow(setVC)
+        setVC.saveComplate = { [weak self] in
+            
+        }
     }
     
 }
