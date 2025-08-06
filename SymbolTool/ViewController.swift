@@ -35,13 +35,14 @@ struct Atomic<Value> {
     }
 }
 
-class ViewController: NSViewController {
+class ViewController: NSViewController, NSTextFieldDelegate {
     @IBOutlet weak var dsymPath: NSTextField!
     @IBOutlet var textView: NSTextView!
     @IBOutlet weak var progressBar: NSProgressIndicator!
     @Atomic var originText = ""
     @Atomic var parseText = ""
     @IBOutlet weak var uuid: NSTextField!
+    @IBOutlet weak var comboBox: NSComboBox!
     var arch = "arm64"
     var parsequeue = DispatchQueue.global()
     var logText = ""
@@ -54,6 +55,7 @@ class ViewController: NSViewController {
         progressBar.doubleValue = 0
         progressBar.minValue = 0
         progressBar.isHidden = true
+        dsymPath.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(textDidChange(_:)),
                                                        name: NSText.didChangeNotification,
                                                        object: textView)
@@ -164,5 +166,15 @@ class ViewController: NSViewController {
         }
     }
     
+}
+
+extension ViewController: NSControlTextEditingDelegate {
+    func controlTextDidChange(_ obj: Notification) {
+        guard let textField = obj.object as? NSTextField else { return }
+        let fm = FileManager.default
+        if fm.fileExists(atPath: textField.stringValue) {
+            didSelectedPlatform(comboBox)
+        }
+    }
 }
 

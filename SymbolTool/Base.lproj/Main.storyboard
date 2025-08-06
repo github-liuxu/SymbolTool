@@ -891,6 +891,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="comboBox" destination="sJZ-2m-veV" id="GEq-ie-bvd"/>
                         <outlet property="dsymPath" destination="Vi9-NV-hLp" id="6EZ-FO-5LN"/>
                         <outlet property="progressBar" destination="QFT-Dp-8Me" id="JVm-XN-qWR"/>
                         <outlet property="textView" destination="lhb-Ju-RKh" id="rhk-D9-v7K"/>
