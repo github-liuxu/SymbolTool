@@ -149,7 +149,10 @@ class AndroidParser: ParserProtocol {
         }
         let array = text.split(separator: " ")
         if array.count >= 3 {
-            let addr = String(array[2])
+            var addr = String(array[2])
+            if !addr.hasPrefix("0x") {
+                addr = "0x" + addr
+            }
             let result = CmdUtil.executeCommand(addr2line, arguments: ["-C", "-f", "-e", self.dsymPath, addr])
             return result
         }
